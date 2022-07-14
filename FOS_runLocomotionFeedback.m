@@ -15,7 +15,7 @@ if ~exist('sStimParamsSettings','var') || isempty(sStimParamsSettings)
 
     %general
     sStimParamsSettings = struct;
-    sStimParamsSettings.strOutputPath = '\\vs03\VS03-CSF-1\Haak'; %'C:\_Data';
+    sStimParamsSettings.strOutputPath = ''; %'C:\_Data';
     sStimParamsSettings.strTempObjectPath = 'C:\_Temp';
     sStimParamsSettings.strProject = 'Innate_defense';
     sStimParamsSettings.strDataset = 'xx.xx.xx';
@@ -24,7 +24,7 @@ if ~exist('sStimParamsSettings','var') || isempty(sStimParamsSettings)
     sStimParamsSettings.strCondition = '';
     sStimParamsSettings.strSetup = 'FlyOver_setup';
     sStimParamsSettings.strStimType = 'FlyOver';
-    sStimParamsSettings.strInvestigator = 'Robin_Haak';
+    sStimParamsSettings.strInvestigator = '';
     sStimParamsSettings.strDate = getDate;
 
     %visual space parameters
