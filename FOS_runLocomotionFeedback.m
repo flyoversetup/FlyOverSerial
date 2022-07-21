@@ -1,6 +1,6 @@
 
 %FOS_runLocomotionFeedback
-%version 14 July 2022, Robin Haak
+%version 21 July 2022, Robin Haak
 
 %% prepare
 clear
@@ -28,7 +28,7 @@ if ~exist('sStimParamsSettings','var') || isempty(sStimParamsSettings)
     sStimParamsSettings.strDate = getDate;
 
     %visual space parameters
-    sStimParamsSettings.dblSubjectPosX_cm = 0; % cm; relative to center of screen
+    sStimParamsSettings.dblSubjectPosX_cm = 7.75; % cm; relative to center of screen
     sStimParamsSettings.dblSubjectPosY_cm = 0; % cm; relative to center of screen, not important for FlyOver stim
     sStimParamsSettings.dblScreenDistance_cm = 23; % cm; measure [23]
 
@@ -42,10 +42,14 @@ if ~exist('sStimParamsSettings','var') || isempty(sStimParamsSettings)
     sStimParamsSettings.intBackground = round(mean(sStimParamsSettings.dblBackground) * 255);
 
     %stimulus trigger variables
-    sStimParamsSettings.dblIntialBlank = 0; %s, duration of initial blank
-    sStimParamsSettings.dblTrialInterval = 5; %s, minimal inter-trial interval
+    sStimParamsSettings.dblInitialBlank = 60; %s, duration of initial blank
+    sStimParamsSettings.dblTrialInterval = 60; %s, minimal inter-trial interval
+    if boolDebug == true
+        sStimParamsSettings.dblInitialBlank = 0;
+        sStimParamsSettings.dblTrialInterval = 5;
+    end
     sStimParamsSettings.dblRunThreshold = 0.2; %m/s, running speed threshold for triggering the stimulus
-    sStimParamsSettings.dblRunThresholdTime = 5; %s, threshold should be exceeded for at least X seconds
+    sStimParamsSettings.dblRunThresholdTime = 3; %s, threshold should be exceeded for at least X seconds
 
     %serial
     sStimParamsSettings.strWheelComPort = 'COM7';
@@ -118,7 +122,7 @@ sStimParams.sStims = sStims;
 
 %get total number of trials & approx. trial duration
 intNumTrials = length(sStims);
-dblApproxStimDur = ceil((sStimParams.dblScreenHeight_deg+sStims(1).vecStimSize_deg(2))/sStims(1).dblVelocity_deg);
+dblApproxStimDur = ceil((sStimParams.dblScreenHeight_deg + sStims(1).vecStimSize_deg(2)) / sStims(1).dblVelocity_deg);
 
 %% initialize serial communication with running wheel
 if boolUseRunWheel == true
@@ -155,7 +159,7 @@ try
     vecRunData = [];
     vecRunTime = [];
     dblLastStim = 0;
-    dblWheelSampRate = 185; %Hz; measured
+    dblWheelSampRate = 160; %Hz; measured
     vecRunSpeed = zeros(sStimParams.dblRunThresholdTime * dblWheelSampRate, 1);
     intRunTemp = 1;
 
@@ -200,7 +204,7 @@ try
         boolRunThresholdCrossed = sum(vecRunSpeed > sStimParams.dblRunThreshold) > 0.95 * length(vecRunSpeed);
 
         %show next stim when all conditions are met
-        if intStimNumber < intNumTrials && boolRunThresholdCrossed && (toc(hTic) > (dblLastStim + dblApproxStimDur + sStimParams.dblTrialInterval))
+        if intStimNumber < intNumTrials && boolRunThresholdCrossed && (toc(hTic) > (sStimParams.dblInitialBlank + dblLastStim + dblApproxStimDur + sStimParams.dblTrialInterval))
 
             %increment trial & log timestamp
             intStimNumber = intStimNumber + 1;
@@ -239,6 +243,7 @@ try
     sStimParams = rmfield(sStimParams, 'sStims'); %remove field from 'sStimParams', was only used for memory mapping
 
     %save running data
+    structWheel = struct;
     structWheel.vecRunData = vecRunData;
     structWheel.vecRunTime = vecRunTime;
 
@@ -251,7 +256,7 @@ try
     if boolDebug == false
         structEP.sStimParams = sStimParams;
         save(fullfile(strSessionOutputPath, 'structEP'), 'structEP');
-        structRun.sStimParams = sStimParams;
+        structWheel.sStimParams = sStimParams;
         save(fullfile(strSessionOutputPath, 'structWheel'), 'structWheel', '-v7.3');
 
         %create .json file
@@ -264,19 +269,9 @@ try
 
 catch ME
     %% catch me and throw me
-    fprintf('\n\n\nError occurred! Trying to save data and clean up...\n\n\n');
+    fprintf('\n\n\nError occurred!...\n\');
+
     
-    if boolDebug == false
-        structEP.sStimParams = sStimParams;
-        save(fullfile(strSessionOutputPath, 'structEP'), 'structEP');
-        structRun.sStimParams = sStimParams;
-        save(fullfile(strSessionOutputPath, 'structWheel'), 'structWheel', '-v7.3');
-
-        %create .json file
-        strJsonFullName = [strSessionOutputPath filesep strExperimentName '_session.json'];
-        savejson('', sJson, strJsonFullName);
-    end
-
     %% show error
     rethrow(ME);
 end

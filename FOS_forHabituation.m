@@ -12,9 +12,9 @@ intUseScreen = 1; %which screen to use
 dblBackgroundIntensity = 0.5; %background intensity (dbl, [0 1]) 
 intBackgroundIntensity = round(mean(dblBackgroundIntensity)*255);
 Screen('Preference', 'SkipSyncTests', 1);
-[ptrWindow, vecRect] = Screen('OpenWindow', intUseScreen ,intBackgroundIntensity, []);
+[ptrWindow, vecRect] = Screen('OpenWindow', intUseScreen, intBackgroundIntensity, []);
 load("gammaTable_new.mat");
-Screen('LoadNormalizedGammaTable', ptrWindow, gammaTable_new*[1 1 1]);
+Screen('LoadNormalizedGammaTable', ptrWindow, gammaTable_new * [1 1 1]);
 
 %% running data
 
@@ -31,7 +31,7 @@ intTimeToRecord_s = 3600; %s, duration of recording
 dblWheelCircumference_m = 0.534055; %m
 intPulsesPerCircumference = 1024; %encoder pulses
 dblMeterPerPulse = dblWheelCircumference_m/intPulsesPerCircumference;
-dblRunningThreshold = 0.0; %m/s
+dblRunningThreshold = 0.2; %m/s
 
 fprintf('\n\n\nStarted @%s\n', getTime);
 fprintf('\nGathering data for %.1f minutes...', intTimeToRecord_s/60);
@@ -52,7 +52,7 @@ end
 fprintf('Done!\n')
 
 %calculate running speed
-vecRunningSpeed_ms = (diff(vecPulseCount)./diff(vecTimeStamps_s)) * dblMeterPerPulse;
+vecRunningSpeed_ms = (diff(vecPulseCount) ./ diff(vecTimeStamps_s)) * dblMeterPerPulse;
 vecRunningTimeStamps_s = (vecTimeStamps_s(2:end));
 
 %plot
