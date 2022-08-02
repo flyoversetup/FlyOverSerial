@@ -1,8 +1,8 @@
 
-function sStims = FOS_loadStimSet(sStimParams)
+function [sStims, sStimParams] = FOS_loadStimSet(sStimParams)
 
 %% stimulus set selection
-cellAvailSets = {'50_Discs', '50_Ellipses', '25_Discs_25_Ellipses', 'Discs, 25BF, 25FB'}; %list of available stim sets, manually add new ones
+cellAvailSets = {'50_Discs', '50_Ellipses', '25_Discs_25_Ellipses', 'Discs, 25BF, 25FB', '50_Discs_W_BBG'}; %list of available stim sets, manually add new ones
 
 %get user input
 indSelected = listdlg('PromptString', {'Select a stimulus set'}, 'SelectionMode', 'single', 'ListString', cellAvailSets);
@@ -13,7 +13,7 @@ if strcmp(strSelected, '50_Discs')
     intTotalStims = 50;
     vecStimSize_deg = [4 4]; %deg
     dblVelocity_deg = 20; %deg/s
-    dblStimX_deg = 0; %relative to middle of the screen
+    dblStimX_deg = -10; %relative to middle of the screen
     dblStimulus = 0;
     intDirection = 0;
 
@@ -33,10 +33,9 @@ elseif strcmp(strSelected, '50_Ellipses')
     intTotalStims = 50;
     vecStimSize_deg = [4.5 1.5]; %deg
     dblVelocity_deg = 20; %deg/s
-    dblStimX_deg = 0; %relative to middle of the screen
+    dblStimX_deg = -10; %relative to middle of the screen
     dblStimulus = 0;
     intDirection = 0;
-
 
     %create stimulus struct
     sStims = struct;
@@ -50,12 +49,12 @@ elseif strcmp(strSelected, '50_Ellipses')
 
     end
 
-    %% 50  black discs, 50 black ellipses
+    %% 25  black discs, 25 black ellipses
 elseif strcmp(strSelected, '25_Discs_25_Ellipses')
     intTotalStims = 50;
     vecStimSize_deg = [4 4]; %deg
     dblVelocity_deg = 20; %deg/s
-    dblStimX_deg = 0; %relative to middle of the screen
+    dblStimX_deg = -10; %relative to middle of the screen
     dblStimulus = 0;
     intDirection = 0;
 
@@ -101,5 +100,29 @@ elseif strcmp(strSelected, 'Discs, 25BF, 25FB')
             sStims(intTrial).intDirection = 1;
         end
     end
+
+elseif strcmp(strSelected, '50_Discs_W_BBG')
+    intTotalStims = 50;
+    vecStimSize_deg = [4 4]; %deg
+    dblVelocity_deg = 20; %deg/s
+    dblStimX_deg = -10; %relative to middle of the screen
+    dblStimulus = 1;
+    intDirection = 0;
+
+    %create stimulus struct
+    sStims = struct;
+    for intTrial = 1:(intTotalStims)
+        sStims(intTrial).vecStimSize_deg = vecStimSize_deg;
+        sStims(intTrial).dblVelocity_deg = dblVelocity_deg;
+        sStims(intTrial).dblStimX_deg = dblStimX_deg;
+        sStims(intTrial).dblStimulus = dblStimulus;
+        sStims(intTrial).intStimulus = round(mean(sStims(intTrial).dblStimulus) * 255);
+        sStims(intTrial).intDirection = intDirection;
+    end
+
+    %black background
+    sStimParams.dblBackground = 0;
+    sStimParams.intBackground = 0;
+  
 end
 
