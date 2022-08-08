@@ -14,7 +14,7 @@ if strcmp(strSelected, '50_Discs')
     vecStimSize_deg = [4 4]; %deg
     dblVelocity_deg = 20; %deg/s
     dblStimX_deg = -10; %relative to middle of the screen
-    dblStimulus = 0;
+    dblStimulus = 0.5;
     intDirection = 0;
 
     %create stimulus struct
@@ -33,7 +33,7 @@ elseif strcmp(strSelected, '50_Ellipses')
     intTotalStims = 50;
     vecStimSize_deg = [4.5 1.5]; %deg
     dblVelocity_deg = 20; %deg/s
-    dblStimX_deg = -10; %relative to middle of the screen
+    dblStimX_deg = +20; %relative to middle of the screen
     dblStimulus = 0;
     intDirection = 0;
 
@@ -78,7 +78,7 @@ elseif strcmp(strSelected, '25_Discs_25_Ellipses')
 
 elseif strcmp(strSelected, 'Discs, 25BF, 25FB')
     intTotalStims = 50;
-    vecStimSize_deg = [4 4]; %deg
+    vecStimSize_deg = [4.5 1.5]; %deg
     dblVelocity_deg = 20; %deg/s
     dblStimX_deg = 0; %relative to middle of the screen
     dblStimulus = 0;
@@ -123,6 +123,31 @@ elseif strcmp(strSelected, '50_Discs_W_BBG')
     %black background
     sStimParams.dblBackground = 0;
     sStimParams.intBackground = 0;
-  
+
+elseif strcmp(strSelected, 'robin')
+    intTotalStims = 50;
+    vecStimSize_deg = [4.5 1.5]; %deg
+    dblVelocity_deg = 20; %deg/s
+    dblStimX_deg = +20; %relative to middle of the screen
+    dblStimulus = 0;
+    intDirection = 0;
+
+    %get ellipse indices (random)
+    indEllipse = randperm(intTotalStims); indEllipse = indEllipse(1 : round(intTotalStims / 2));
+
+    %create stimulus struct
+    sStims = struct;
+    for intTrial = 1:(intTotalStims)
+        sStims(intTrial).vecStimSize_deg = vecStimSize_deg;
+        if ismember(intTrial, indEllipse)
+            sStims(intTrial).vecStimSize_deg = [1.5 4.5];
+        end
+        sStims(intTrial).dblVelocity_deg = dblVelocity_deg;
+        sStims(intTrial).dblStimX_deg = dblStimX_deg;
+        sStims(intTrial).dblStimulus = dblStimulus;
+        sStims(intTrial).intStimulus = round(mean(sStims(intTrial).dblStimulus) * 255);
+        sStims(intTrial).intDirection = intDirection;
+
+    end
 end
 
